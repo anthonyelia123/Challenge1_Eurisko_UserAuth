@@ -40,6 +40,7 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
                             val lastName = getString(2)
 
                             binding.userinfo.setText("Hello $firstName $lastName")
+
                         }
 
                     }
