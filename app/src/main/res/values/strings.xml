@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Users Auth</string>
+    <string name="sign_up_here">Don\'t have an account? <u>Sing Up</u>.</string>
+    <string name="log_in_here">Already have an account? <u>Log In</u>.</string>
+</resources>
