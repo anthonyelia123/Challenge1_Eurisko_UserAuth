@@ -8,6 +8,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:643484927214:android:9b2562577941f74dc75fff",
+        "android_client_info": {
+          "package_name": "com.example.eurisko_challenge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "643484927214-tho16lku8ip0ql1gr0poq63rubuiaijj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZK5fiyCDam4XeMFVtIduaHRJ4GpZoBJ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "643484927214-tho16lku8ip0ql1gr0poq63rubuiaijj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:643484927214:android:040dcea3200947b9c75fff",
         "android_client_info": {
           "package_name": "com.example.firestoreexample"
