@@ -1,10 +1,7 @@
 package com.example.eurisko_challenge.FirebaseAuth
 
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -20,13 +17,13 @@ class FirebaseUserAuth(private val listener: OnUserAuthenticate) {
     private val mAuth = FirebaseAuth.getInstance()
 
     fun login(email: String, pass: String, activity: Activity){
-        mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(activity, OnCompleteListener { task ->
+        mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
             if(task.isSuccessful){
                 listener.onLogin("200")
             } else {
                 listener.onLogin("500")
             }
-        })
+        }
     }
     fun signup(email: String, pass: String){
         mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { task ->

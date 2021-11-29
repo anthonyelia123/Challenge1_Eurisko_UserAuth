@@ -84,7 +84,7 @@ internal class AppProvider: ContentProvider() {
 
             else -> throw IllegalArgumentException("Unknown uri: $uri")
         }
-        return null
+        return uri
     }
 
 

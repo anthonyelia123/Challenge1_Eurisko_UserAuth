@@ -21,7 +21,7 @@ import com.example.eurisko_challenge.R
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.RuntimeException
 
-// TODO: Rename parameter arguments, choose names that match
+
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_USER = "user"
 
@@ -31,19 +31,25 @@ private const val ARG_USER = "user"
  * create an instance of this fragment.
  */
 class EditProfileFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+
     private var userModel: UserModel? = null
     private var listener: MoreFragment.OnClickCallBack? = null
+
     private val editProfileFragmentViewModel: EditProfileFragmentViewModel by viewModels()
+
     private lateinit var firstNameEditText: TextInputLayout
     private lateinit var lastNameEditText: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //get the userModel passed
         userModel = arguments?.getParcelable<UserModel>(ARG_USER)
+
+        //observe firstname in MVVM
         editProfileFragmentViewModel.getFirstName().observe(this, Observer {
             firstNameEditText.editText?.setText(it)
         })
+        //observe lastName in MVVM
         editProfileFragmentViewModel.getLastName().observe(this, Observer {
             lastNameEditText.editText?.setText(it)
         })
@@ -52,7 +58,7 @@ class EditProfileFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_edit_profile, container, false)
-        view.findViewById<TextView>(R.id.emailTextView).setText(userModel?.email)
+        view.findViewById<TextView>(R.id.emailTextView).text = userModel?.email
         firstNameEditText = view.findViewById<TextInputLayout>(R.id.first_name)
         lastNameEditText = view.findViewById<TextInputLayout>(R.id.last_name)
 
@@ -69,7 +75,9 @@ class EditProfileFragment : Fragment() {
                 }
                 val selection = User.Columns.ID + " = ?"
                 val selectionArgs = arrayOf(userModel?.id)
-                listener?.saveChanges(values, selection, selectionArgs)
+                //listener?.saveChanges(values, selection, selectionArgs)
+                editProfileFragmentViewModel.saveChanges(values, selection, selectionArgs)
+                Toast.makeText(activity, "Names updated successfully", Toast.LENGTH_LONG).show()
             } else if(result == "bothNameMissed") {
                 firstNameEditText.helperText = "please enter your first name"
                 lastNameEditText.helperText = "please enter your last name"
@@ -84,7 +92,7 @@ class EditProfileFragment : Fragment() {
         //open and get image selected from gallery
         val imageBtn = view.findViewById<Button>(R.id.addNewPicBtn)
         imageBtn.setOnClickListener {
-            listener?.getImageFromGalery()
+            listener?.getImageFromGalery(editProfileFragmentViewModel)
         }
 
         return view

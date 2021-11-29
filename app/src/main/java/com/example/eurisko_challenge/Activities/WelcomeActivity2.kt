@@ -1,15 +1,19 @@
 package com.example.eurisko_challenge.Activities
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder.createSource
+import android.graphics.ImageDecoder.decodeBitmap
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -17,12 +21,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupWithNavController
 import com.example.eurisko_challenge.FirebaseAuth.FirebaseUserAuth
 import com.example.eurisko_challenge.Fragments.AboutUsFragment
 import com.example.eurisko_challenge.Fragments.ChangePassFragment
@@ -30,6 +32,7 @@ import com.example.eurisko_challenge.Fragments.EditProfileFragment
 import com.example.eurisko_challenge.Fragments.MoreFragment
 import com.example.eurisko_challenge.Models.UserModel
 import com.example.eurisko_challenge.Fragments.NewFragment
+import com.example.eurisko_challenge.MVVM.EditProfileFragmentViewModel
 import com.example.eurisko_challenge.Objects.User
 import com.example.eurisko_challenge.Objects.UsersImage
 import com.example.eurisko_challenge.R
@@ -37,7 +40,6 @@ import com.example.eurisko_challenge.databinding.ActivityWelcome2Binding
 
 import java.io.ByteArrayOutputStream
 
-private const val USER_INTENT = "user"
 private const val TAG = "MoreActivity"
 private const val IMAGE_REQUEST_CODE = 200
 class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, FirebaseUserAuth.OnUserAuthenticate {
@@ -60,7 +62,7 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
         val bottomNavView = binding.bottomNavView
 
         //init bottom navigation on selectedListener
-        bottomNavView.setOnNavigationItemSelectedListener { item ->
+        bottomNavView.setOnItemSelectedListener { item ->
             var fragment: Fragment? = null
             when (item.itemId) {
                 R.id.moreFragment -> {
@@ -70,7 +72,8 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
                     fragment = NewFragment()
                 }
             }
-            supportFragmentManager.beginTransaction().replace(R.id.nav_fragment, fragment!!).addToBackStack(null).commit()
+            val oldFrag = supportFragmentManager.findFragmentById(R.id.nav_fragment)
+            supportFragmentManager.beginTransaction().remove(oldFrag!!).replace(R.id.nav_fragment, fragment!!).commit()
             true
         }
 
@@ -114,10 +117,11 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun getUserName(view: View) {
         val textView = view as TextView
         getUserInfoFromDatabase()
-        textView.setText("Hello ${userModel.firstName} ${userModel.lastName}")
+        textView.text = "Hello ${userModel.firstName} ${userModel.lastName}"
 
     }
 
@@ -143,17 +147,24 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
     //when edit profile btn is clicked in MoreFragment
     override fun onEditProfileClicked() {
         val fragment = EditProfileFragment.newInstance(userModel)
-        supportFragmentManager.beginTransaction()
-            .addToBackStack(null)
-            .replace(R.id.nav_fragment, fragment)
-            .commit()
+        val oldfrag = supportFragmentManager.findFragmentById(R.id.nav_fragment)
+            if(oldfrag != null){
+                supportFragmentManager.beginTransaction()
+                    .addToBackStack(null)
+                    .remove(oldfrag)
+                    .replace(R.id.nav_fragment, fragment)
+                    .commit()
+            }
+
     }
 
     //when change pass btn is clicked in MoreFragment
     override fun onEditPassClicked() {
         val fragment = ChangePassFragment.newInstance(userModel)
+        val oldFrag = supportFragmentManager.findFragmentById(R.id.nav_fragment)
         supportFragmentManager.beginTransaction()
             .addToBackStack(null)
+            .remove(oldFrag!!)
             .replace(R.id.nav_fragment, fragment)
             .commit()
     }
@@ -161,19 +172,12 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
     //when about us btn is clicked in MoreFragment
     override fun onAboutUsClicked() {
         val fragment = AboutUsFragment()
+        val oldFrag = supportFragmentManager.findFragmentById(R.id.nav_fragment)
         supportFragmentManager.beginTransaction()
             .addToBackStack(null)
+            .remove(oldFrag!!)
             .replace(R.id.nav_fragment, fragment)
             .commit()
-    }
-
-    // update user name in database
-    override fun saveChanges(contentValues: ContentValues, selections: String, selectionArgs: Array<String?>) {
-        progressDialog.show()
-        progressDialog.setContentView(R.layout.progress_dialog)
-        contentResolver.update(User.CONTENT_URI, contentValues, selections, selectionArgs)
-        progressDialog.dismiss()
-        Toast.makeText(this, "Names updated successfully", Toast.LENGTH_LONG).show()
     }
 
     //change user password
@@ -196,29 +200,39 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
         }
     }
 
+
+    var editProfileViewModel: EditProfileFragmentViewModel? = null
     // get image from gallery
-    override fun getImageFromGalery(){
+    @RequiresApi(Build.VERSION_CODES.P)
+    override fun getImageFromGalery(editProfileFragmentViewModel: EditProfileFragmentViewModel){
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "image/*"
-        startActivityForResult(intent, IMAGE_REQUEST_CODE)
+        //startActivityForResult(intent, IMAGE_REQUEST_CODE) is duplicated use registerForActivityResult instead
+        getResult.launch(intent)
+        editProfileViewModel = editProfileFragmentViewModel
     }
+
     // on selected image from gallery
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == IMAGE_REQUEST_CODE && resultCode == RESULT_OK){
-            val imageFilePath = data?.data
-            val imageToStore = MediaStore.Images.Media.getBitmap(contentResolver, imageFilePath)
-            saveImageToDatabase(imageToStore)
+    @RequiresApi(Build.VERSION_CODES.P)
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val imageFilePath = it.data?.data
+                val imageDecoder = createSource(contentResolver, imageFilePath!!)
+                val imageToStore = decodeBitmap(imageDecoder)
+                saveImageToDatabase(imageToStore, editProfileViewModel!!)
+            }
         }
-    }
 
 
     override fun onLogin(result: String) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onSignup(result: String) {
-        TODO("Not yet implemented")
+
     }
 
     override fun onLogout(result: String) {
@@ -260,41 +274,19 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
     }
 
     //Save image to dataBase
-    fun saveImageToDatabase(imageUriString: Bitmap) {
+    @SuppressLint("Recycle")
+    fun saveImageToDatabase(imageUriString: Bitmap, editProfileFragmentViewModel: EditProfileFragmentViewModel) {
         progressDialog.show()
         progressDialog.setContentView(R.layout.progress_dialog)
-        val selection = UsersImage.Columns.ID + " = ?"
-        val selectionArgs = arrayOf(userModel.id)
-        var cursor = contentResolver.query(UsersImage.CONTENT_URI,null,selection,selectionArgs,null)
-        if(cursor?.count == 0) {
-            // insert image to database
-            Log.d(TAG, "insert photo")
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            imageUriString.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream)
-            val bytesImage = byteArrayOutputStream.toByteArray()
-            val values = ContentValues().apply {
-                put(UsersImage.Columns.ID, userModel.id)
-                put(UsersImage.Columns.Image, bytesImage)
-            }
 
-            contentResolver.insert(UsersImage.CONTENT_URI, values)
+        val result = editProfileFragmentViewModel.saveImageToDatabase(imageUriString, userModel.id!!)
+        if(result == "saved"){
             progressDialog.dismiss()
             Toast.makeText(this, "Image saved successfully", Toast.LENGTH_LONG).show()
-
         } else {
-            // update image from database
-            Log.d(TAG, "update photo")
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            imageUriString.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream)
-            val bytesImage = byteArrayOutputStream.toByteArray()
-            val values = ContentValues().apply {
-                put(UsersImage.Columns.ID, userModel.id)
-                put(UsersImage.Columns.Image, bytesImage)
-            }
-            contentResolver.update(UsersImage.CONTENT_URI, values, selection, selectionArgs)
-
             progressDialog.dismiss()
             Toast.makeText(this, "Image updated successfully", Toast.LENGTH_LONG).show()
         }
+
     }
 }

@@ -24,6 +24,9 @@
         <action
             android:id="@+id/action_moreFragment_to_editProfileFragment4"
             app:destination="@id/editProfileFragment4" />
+        <action
+            android:id="@+id/action_moreFragment_to_newFragment22"
+            app:destination="@id/newFragment2" />
     </fragment>
     <fragment
         android:id="@+id/changePassFragment3"

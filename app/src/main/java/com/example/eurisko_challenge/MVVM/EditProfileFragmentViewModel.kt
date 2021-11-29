@@ -1,10 +1,20 @@
 package com.example.eurisko_challenge.MVVM
 
+import android.app.Application
+import android.content.ContentValues
+import android.graphics.Bitmap
+import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.eurisko_challenge.Objects.User
+import com.example.eurisko_challenge.Objects.UsersImage
+import com.example.eurisko_challenge.R
+import java.io.ByteArrayOutputStream
 
-class EditProfileFragmentViewModel: ViewModel() {
+class EditProfileFragmentViewModel(application: Application): AndroidViewModel(application) {
 
     private val _firstName = MutableLiveData<String>()
     private val _lastName = MutableLiveData<String>()
@@ -34,6 +44,43 @@ class EditProfileFragmentViewModel: ViewModel() {
             return "firstNameMissed"
         }
         return "lastNameMissed"
+    }
+    // update user names in database
+    fun saveChanges(contentValues: ContentValues, selections: String, selectionArgs: Array<String?>) {
+
+        getApplication<Application>().contentResolver.update(User.CONTENT_URI, contentValues, selections, selectionArgs)
+
+    }
+    fun saveImageToDatabase(imageUriString: Bitmap, userId: String) :String {
+        val selection = UsersImage.Columns.ID + " = ?"
+        val selectionArgs = arrayOf(userId)
+        val cursor = getApplication<Application>().contentResolver.query(UsersImage.CONTENT_URI,null,selection,selectionArgs,null)
+        if(cursor?.count == 0) {
+            // insert image to database
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            imageUriString.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream)
+            val bytesImage = byteArrayOutputStream.toByteArray()
+            val values = ContentValues().apply {
+                put(UsersImage.Columns.ID, userId)
+                put(UsersImage.Columns.Image, bytesImage)
+            }
+
+            getApplication<Application>().contentResolver.insert(UsersImage.CONTENT_URI, values)
+            return "saved"
+
+        } else {
+            // update image from database
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            imageUriString.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream)
+            val bytesImage = byteArrayOutputStream.toByteArray()
+            val values = ContentValues().apply {
+                put(UsersImage.Columns.ID, userId)
+                put(UsersImage.Columns.Image, bytesImage)
+            }
+            getApplication<Application>().contentResolver.update(UsersImage.CONTENT_URI, values, selection, selectionArgs)
+
+            return "updated"
+        }
     }
 
 }

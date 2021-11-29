@@ -4,15 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
     tools:context=".Fragments.MoreFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         app:cardCornerRadius="150dp"
         android:layout_marginStart="80dp"
         android:layout_marginTop="44dp"
@@ -31,10 +30,10 @@
 
     <TextView
         android:id="@+id/userinfo"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="172dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="28dp"
         android:fontFamily="@font/poppinsmedium"
         android:text="TextView"
         android:textAlignment="center"

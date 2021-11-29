@@ -10,23 +10,21 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.eurisko_challenge.MVVM.EditProfileFragmentViewModel
 import com.example.eurisko_challenge.Models.UserModel
 import com.example.eurisko_challenge.R
 import java.lang.RuntimeException
 
-// TODO: Rename parameter arguments, choose names that match
+
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_USER = "user"
-private const val ARG_LISTENER = "listener"
-
-
 /**
  * A simple [Fragment] subclass.
  * Use the [MoreFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
 class MoreFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+
     private var user: UserModel? = null
     private var listener: OnClickCallBack?= null
 
@@ -50,10 +48,12 @@ class MoreFragment : Fragment() {
 
         //get user names from database
         listener?.getUserName(textView)
+
+        //call onEditPassClicked() method when change pass btn is clicked
         editProfileBtn.setOnClickListener {
             listener?.onEditProfileClicked()
         }
-        //call ononEditPassClicked() method when change pass btn is clicked
+        //call onEditPassClicked() method when change pass btn is clicked
         changePassBtn.setOnClickListener {
             listener?.onEditPassClicked()
         }
@@ -71,7 +71,7 @@ class MoreFragment : Fragment() {
         if(context is OnClickCallBack){
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnClickCallBack")
+            throw RuntimeException("$context must implement OnClickCallBack")
         }
 
     }
@@ -86,9 +86,8 @@ class MoreFragment : Fragment() {
         fun onEditProfileClicked()
         fun onEditPassClicked()
         fun onAboutUsClicked()
-        fun saveChanges(contentValues: ContentValues, selections: String, selectionArgs: Array<String?>)
         fun changePass(currentPass:String, newPass: String)
-        fun getImageFromGalery()
+        fun getImageFromGalery(editProfileFragmentViewModel: EditProfileFragmentViewModel)
         fun getImageFromDatabase(view: View)
     }
     companion object {
@@ -96,7 +95,7 @@ class MoreFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param user Parameter 1.
+         * @param mUser Parameter 1.
          * @return A new instance of fragment MoreFragment.
          */
         // TODO: Rename and change types and number of parameters

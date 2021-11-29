@@ -15,7 +15,7 @@ private const val DATABASE_VERSION = 1
 
 internal class AppDatabase private constructor(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase) {
-        // CREATE TABLE Tasks (_id TEXT PRIMARY KEY NOT NULL, firstname TEXT, lastname TEXT);
+        // CREATE TABLE User (_id TEXT PRIMARY KEY NOT NULL, firstname TEXT, lastname TEXT);
         val sSQL = """CREATE TABLE ${User.TABLE_NAME} (
             ${User.Columns.ID} TEXT PRIMARY KEY NOT NULL,
             ${User.Columns.User_FirstName} TEXT,
