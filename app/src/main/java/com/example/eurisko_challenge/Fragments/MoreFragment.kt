@@ -86,8 +86,6 @@ class MoreFragment : Fragment() {
         fun onEditProfileClicked()
         fun onEditPassClicked()
         fun onAboutUsClicked()
-        fun changePass(currentPass:String, newPass: String)
-        fun getImageFromGalery(editProfileFragmentViewModel: EditProfileFragmentViewModel)
         fun getImageFromDatabase(view: View)
     }
     companion object {

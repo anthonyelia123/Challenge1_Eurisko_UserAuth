@@ -38,7 +38,7 @@ class AboutUsFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_about_us, container, false)
 
-        Toast.makeText(activity, "Please wait a moment", Toast.LENGTH_LONG).show()
+        Toast.makeText(activity, getString(R.string.pleaseWaitAMoment), Toast.LENGTH_LONG).show()
 
         //set url in the webView
         val webView = view.findViewById<WebView>(R.id.webView)

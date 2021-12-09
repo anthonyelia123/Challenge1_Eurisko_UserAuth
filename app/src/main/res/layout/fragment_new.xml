@@ -6,14 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.NewFragment">
 
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="152dp"
-        android:textAlignment="center"
-        android:text="Empty For Now"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/contents_recycle_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

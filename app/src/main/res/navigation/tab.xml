@@ -24,9 +24,6 @@
         <action
             android:id="@+id/action_moreFragment_to_editProfileFragment4"
             app:destination="@id/editProfileFragment4" />
-        <action
-            android:id="@+id/action_moreFragment_to_newFragment22"
-            app:destination="@id/newFragment2" />
     </fragment>
     <fragment
         android:id="@+id/changePassFragment3"
@@ -41,5 +38,14 @@
         android:id="@+id/newFragment2"
         android:name="com.example.eurisko_challenge.Fragments.NewFragment"
         android:label="fragment_new"
-        tools:layout="@layout/fragment_new" />
+        tools:layout="@layout/fragment_new" >
+        <action
+            android:id="@+id/action_newFragment2_to_moreDetailsFragment"
+            app:destination="@id/moreDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/moreDetailsFragment"
+        android:name="com.example.eurisko_challenge.Fragments.MoreDetailsFragment"
+        android:label="fragment_more_details"
+        tools:layout="@layout/fragment_more_details" />
 </navigation>

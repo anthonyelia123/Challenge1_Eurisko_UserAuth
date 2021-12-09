@@ -185,7 +185,7 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, FirebaseUserAu
             saveUserInfo()
             progressDialog.dismiss()
         } else {
-            Toast.makeText(this, "Email already exists", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.emailAlreadyExist), Toast.LENGTH_LONG).show()
             progressDialog.dismiss()
         }
     }

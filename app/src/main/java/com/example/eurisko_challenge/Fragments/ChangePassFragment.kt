@@ -1,5 +1,6 @@
 package com.example.eurisko_challenge.Fragments
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +12,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.eurisko_challenge.FirebaseAuth.FirebaseUserAuth
 import com.example.eurisko_challenge.MVVM.ChangePassFragmentViewModel
 import com.example.eurisko_challenge.Models.UserModel
@@ -18,6 +20,7 @@ import com.example.eurisko_challenge.R
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 import java.lang.RuntimeException
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,6 +39,7 @@ class ChangePassFragment : Fragment(), FirebaseUserAuth.OnUserAuthenticate {
     private lateinit var currentPassEditText: TextInputLayout
     private lateinit var newPassEditText: TextInputLayout
     private lateinit var confirmPassEditText: TextInputLayout
+    private lateinit var progressDialog : ProgressDialog
     private var listener: MoreFragment.OnClickCallBack? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +54,7 @@ class ChangePassFragment : Fragment(), FirebaseUserAuth.OnUserAuthenticate {
         changePassFragmentViewModel.getConfirmPass().observe(this, Observer {
             confirmPassEditText.editText?.setText(it)
         })
+        progressDialog = ProgressDialog(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -67,7 +72,10 @@ class ChangePassFragment : Fragment(), FirebaseUserAuth.OnUserAuthenticate {
             val validPass2 = confirmPassEditText.helperText == null
             if(validPass && validPass2){
                 //update pass in database
-                listener?.changePass(currentPassEditText.editText?.text.toString(), newPassEditText.editText?.text.toString())
+                lifecycleScope.launch{
+                   launch { changePass(currentPassEditText.editText?.text.toString(), newPassEditText.editText?.text.toString()) }
+                }
+
             }
 
         }
@@ -109,6 +117,13 @@ class ChangePassFragment : Fragment(), FirebaseUserAuth.OnUserAuthenticate {
                 }
             }
     }
+    //change user password
+    suspend fun changePass(currentPass:String, newPass: String) {
+        progressDialog.show()
+        progressDialog.setContentView(R.layout.progress_dialog)
+        val firebaseAuth = FirebaseUserAuth(this)
+        firebaseAuth.changePass(userModel?.email!!,currentPass, newPass)
+    }
 
     override fun onLogin(result: String) {
         TODO("Not yet implemented")
@@ -123,6 +138,13 @@ class ChangePassFragment : Fragment(), FirebaseUserAuth.OnUserAuthenticate {
     }
 
     override fun onChangePass(result: String) {
-
+        progressDialog.dismiss()
+        if(result == "200"){
+            Toast.makeText(activity, getString(R.string.passChanged), Toast.LENGTH_LONG).show()
+        } else if(result == "404"){
+            Toast.makeText(activity, getString(R.string.currentPasIncorrect), Toast.LENGTH_LONG).show()
+        } else if(result == "500") {
+            Toast.makeText(activity, getString(R.string.passUnseccessfullychanged), Toast.LENGTH_LONG).show()
+        }
     }
 }

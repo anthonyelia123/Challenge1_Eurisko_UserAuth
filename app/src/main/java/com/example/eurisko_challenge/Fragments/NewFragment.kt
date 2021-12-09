@@ -1,60 +1,75 @@
 package com.example.eurisko_challenge.Fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.eurisko_challenge.MVVM.NewFragmentViewModel
+import com.example.eurisko_challenge.Models.MostPopularDataModel
+import com.example.eurisko_challenge.Models.Result
 import com.example.eurisko_challenge.R
+import com.example.eurisko_challenge.RecycleView.MostPopularViewAdapter
+import com.example.eurisko_challenge.RecycleView.MostPopularViewHolder
+import com.example.eurisko_challenge.Retrofit.PostClient
+import com.example.eurisko_challenge.Retrofit.PostInterface
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.sql.Array
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
  * Use the [NewFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class NewFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class NewFragment : Fragment(), MostPopularViewAdapter.OnClickListener {
+
+    private val newFragmentViewModel: NewFragmentViewModel by viewModels()
+    private lateinit var mostPopularViewAdapter: MostPopularViewAdapter
+    private var results: List<Result>? = null
+    private val TAG = "NewFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        newFragmentViewModel.getPostLiveData().observe(this, Observer {
+            mostPopularViewAdapter.loadNewData(it.results)
+        })
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_new, container, false)
+        val view = inflater.inflate(R.layout.fragment_new, container, false)
+        val recyclerView: RecyclerView = view.findViewById(R.id.contents_recycle_view)
+        newFragmentViewModel.getPosts()
+        mostPopularViewAdapter = MostPopularViewAdapter(ArrayList(), this)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = mostPopularViewAdapter
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment NewFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            NewFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+
+    override fun onItemClick(url: String) {
+        val moreDetailsFragment = MoreDetailsFragment.newInstance(url)
+        val oldFrag = activity?.supportFragmentManager?.findFragmentById(R.id.nav_fragment)
+        if(oldFrag != null && moreDetailsFragment != null){
+            activity?.supportFragmentManager?.beginTransaction()
+                ?.addToBackStack(null)
+                ?.remove(oldFrag)
+                ?.replace(R.id.nav_fragment, moreDetailsFragment)
+                ?.commit()
+        }
+
     }
+
 }

@@ -116,13 +116,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, FirebaseUserAuth
 
     override fun onLogin(result: String) {
         if(result == "200"){
-            Toast.makeText(this, "Successfully Logged In", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.loginsuccesffuly), Toast.LENGTH_LONG).show()
             val intent = Intent(this, WelcomeActivity2::class.java)
             startActivity(intent)
             progressDialog.dismiss()
             finish()
         } else {
-            Toast.makeText(this, "invalid username or password", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.invalidUsernamOrPass), Toast.LENGTH_LONG).show()
             progressDialog.dismiss()
         }
     }

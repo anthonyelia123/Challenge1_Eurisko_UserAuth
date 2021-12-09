@@ -121,7 +121,7 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
     override fun getUserName(view: View) {
         val textView = view as TextView
         getUserInfoFromDatabase()
-        textView.text = "Hello ${userModel.firstName} ${userModel.lastName}"
+        textView.text = "${getString(R.string.hello)} ${userModel.firstName} ${userModel.lastName}"
 
     }
 
@@ -180,51 +180,8 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
             .commit()
     }
 
-    //change user password
-    override fun changePass(currentPass:String, newPass: String) {
-        progressDialog.show()
-        progressDialog.setContentView(R.layout.progress_dialog)
-        val firebaseAuth = FirebaseUserAuth(this)
-        firebaseAuth.changePass(userModel.email!!,currentPass, newPass)
-    }
-
-    // on change pass complete
-    override fun onChangePass(result: String) {
-        progressDialog.dismiss()
-        if(result == "200"){
-            Toast.makeText(this, "Password successfully changed", Toast.LENGTH_LONG).show()
-        } else if(result == "404"){
-            Toast.makeText(this, "Your current password is incorrect", Toast.LENGTH_LONG).show()
-        } else if(result == "500") {
-            Toast.makeText(this, "Password unsuccessfully changed", Toast.LENGTH_LONG).show()
-        }
-    }
 
 
-    var editProfileViewModel: EditProfileFragmentViewModel? = null
-    // get image from gallery
-    @RequiresApi(Build.VERSION_CODES.P)
-    override fun getImageFromGalery(editProfileFragmentViewModel: EditProfileFragmentViewModel){
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        //startActivityForResult(intent, IMAGE_REQUEST_CODE) is duplicated use registerForActivityResult instead
-        getResult.launch(intent)
-        editProfileViewModel = editProfileFragmentViewModel
-    }
-
-    // on selected image from gallery
-    @RequiresApi(Build.VERSION_CODES.P)
-    private val getResult =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val imageFilePath = it.data?.data
-                val imageDecoder = createSource(contentResolver, imageFilePath!!)
-                val imageToStore = decodeBitmap(imageDecoder)
-                saveImageToDatabase(imageToStore, editProfileViewModel!!)
-            }
-        }
 
 
     override fun onLogin(result: String) {
@@ -241,6 +198,10 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
             startActivity(intent)
             finish()
         }
+    }
+
+    override fun onChangePass(result: String) {
+        TODO("Not yet implemented")
     }
 
 
@@ -271,22 +232,5 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
                 }
             }
         }
-    }
-
-    //Save image to dataBase
-    @SuppressLint("Recycle")
-    fun saveImageToDatabase(imageUriString: Bitmap, editProfileFragmentViewModel: EditProfileFragmentViewModel) {
-        progressDialog.show()
-        progressDialog.setContentView(R.layout.progress_dialog)
-
-        val result = editProfileFragmentViewModel.saveImageToDatabase(imageUriString, userModel.id!!)
-        if(result == "saved"){
-            progressDialog.dismiss()
-            Toast.makeText(this, "Image saved successfully", Toast.LENGTH_LONG).show()
-        } else {
-            progressDialog.dismiss()
-            Toast.makeText(this, "Image updated successfully", Toast.LENGTH_LONG).show()
-        }
-
     }
 }

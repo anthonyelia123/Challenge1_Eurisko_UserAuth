@@ -14,4 +14,17 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="loginsuccesffuly">Successfully Logged In</string>
+    <string name="invalidUsernamOrPass">invalid username or password</string>
+    <string name="emailAlreadyExist">Email already exists</string>
+    <string name="pleaseWaitAMoment">please wait a moment</string>
+    <string name="nameUpdated">Names updated successfully</string>
+    <string name="enterfirstname">please enter your first name</string>
+    <string name="enterlastname">please enter your last name</string>
+    <string name="imagesaved">Image saved successfully</string>
+    <string name="imageupdated">Image updated successfully</string>
+    <string name="passChanged">Password successfully changed</string>
+    <string name="currentPasIncorrect">Your current password is incorrect</string>
+    <string name="passUnseccessfullychanged">Password unsuccessfully changed</string>
+    <string name="hello">Hello</string>
 </resources>
