@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.WelcomeActivity2">
-
+    tools:context=".activities.WelcomeActivity2">
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -16,8 +15,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore=""
-        app:menu="@menu/menu_tab"/>
-    <androidx.fragment.app.FragmentContainerView
+        app:menu="@menu/menu_tab" />
+
+    <fragment
         android:id="@+id/nav_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"

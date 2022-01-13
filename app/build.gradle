@@ -4,6 +4,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -51,12 +52,9 @@ dependencies {
 
     def lifecycle_version = "2.4.0"
     def room_version = "2.4.0"
+    def nav_version = "2.3.5"
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
-
-
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-process:$lifecycle_version"
@@ -69,23 +67,28 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
     implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+
+    // retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    //picasso
     implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    // kotlin coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 
+    //room database
     implementation("androidx.room:room-runtime:$room_version")
     implementation ("androidx.room:room-ktx:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
-    // To use Kotlin annotation processing tool (kapt)
-    kapt("androidx.room:room-compiler:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")// To use Kotlin annotation processing tool (kapt)
 
     // Hilt dependencies
     implementation "com.google.dagger:hilt-android:$hilt_version"
     implementation 'androidx.lifecycle:lifecycle-livedata-core-ktx:2.4.0'
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
-
     implementation "androidx.hilt:hilt-navigation-fragment:$hilt_nav_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
 
@@ -93,6 +96,12 @@ dependencies {
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 
+    //navigation graph with kotlin
+    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")// Feature module Support
+    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")// Testing Navigation
+    implementation("androidx.navigation:navigation-compose:2.4.0-rc01")// Jetpack Compose Integration
 
     testImplementation 'junit:junit:'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

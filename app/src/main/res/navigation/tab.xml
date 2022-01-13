@@ -7,14 +7,14 @@
 
     <fragment
         android:id="@+id/editProfileFragment4"
-        android:name="com.example.eurisko_challenge.Fragments.EditProfileFragment"
+        android:name="com.example.eurisko_challenge.fragments.EditProfileFragment"
         android:label="fragment_edit_profile"
         tools:layout="@layout/fragment_edit_profile" />
     <fragment
         android:id="@+id/moreFragment"
-        android:name="com.example.eurisko_challenge.Fragments.MoreFragment"
+        android:name="com.example.eurisko_challenge.fragments.MoreFragment"
         android:label="fragment_more"
-        tools:layout="@layout/fragment_more" >
+        tools:layout="@layout/fragment_more">
         <action
             android:id="@+id/action_moreFragment_to_changePassFragment3"
             app:destination="@id/changePassFragment3" />
@@ -27,25 +27,28 @@
     </fragment>
     <fragment
         android:id="@+id/changePassFragment3"
-        android:name="com.example.eurisko_challenge.Fragments.ChangePassFragment"
+        android:name="com.example.eurisko_challenge.fragments.ChangePassFragment"
         android:label="ChangePassFragment" />
     <fragment
         android:id="@+id/aboutUsFragment2"
-        android:name="com.example.eurisko_challenge.Fragments.AboutUsFragment"
+        android:name="com.example.eurisko_challenge.fragments.AboutUsFragment"
         android:label="fragment_about_us"
         tools:layout="@layout/fragment_about_us" />
     <fragment
         android:id="@+id/newFragment2"
-        android:name="com.example.eurisko_challenge.Fragments.NewFragment"
+        android:name="com.example.eurisko_challenge.fragments.NewFragment"
         android:label="fragment_new"
-        tools:layout="@layout/fragment_new" >
+        tools:layout="@layout/fragment_new">
         <action
             android:id="@+id/action_newFragment2_to_moreDetailsFragment"
             app:destination="@id/moreDetailsFragment" />
+        <action
+            android:id="@+id/action_newFragment2_to_editProfileFragment4"
+            app:destination="@id/editProfileFragment4" />
     </fragment>
     <fragment
         android:id="@+id/moreDetailsFragment"
-        android:name="com.example.eurisko_challenge.Fragments.MoreDetailsFragment"
+        android:name="com.example.eurisko_challenge.fragments.MoreDetailsFragment"
         android:label="fragment_more_details"
         tools:layout="@layout/fragment_more_details" />
 </navigation>
