@@ -1,19 +1,32 @@
 package com.example.eurisko_challenge.MVVM
 
+import android.app.Application
 import android.content.ContentValues
 import android.util.Patterns
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.eurisko_challenge.Objects.User
+import com.example.eurisko_challenge.RoomDatabase.AppDatabase
+import com.example.eurisko_challenge.RoomDatabase.Users
+import com.example.eurisko_challenge.RoomDatabase.UsersDao
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class SignupModelView: ViewModel() {
+@HiltViewModel
+class SignupModelView @Inject constructor(private val repository: Repository) : ViewModel() {
+
 
     private val _email = MutableLiveData<String>()
     private val _pass = MutableLiveData<String>()
     private val _pass2 = MutableLiveData<String>()
     private val _firstName = MutableLiveData<String>()
     private val _lastName = MutableLiveData<String>()
+    private val _userSavedSuccessfully = MutableLiveData<Boolean>()
+
+    fun isSavedSuccessfully(): LiveData<Boolean>{
+        return _userSavedSuccessfully
+    }
 
     fun getEmail(): LiveData<String>{
         return _email
@@ -91,5 +104,10 @@ class SignupModelView: ViewModel() {
             return "Field required"
         }
         return null
+    }
+
+    suspend fun saveuserInfo(user: Users){
+        repository.insert(user)
+        _userSavedSuccessfully.postValue(true)
     }
 }

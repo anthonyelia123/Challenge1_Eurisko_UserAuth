@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, FirebaseUserAuth
     private val emailEditText by lazy { binding.loginEmail }
     private val passEditText by lazy { binding.loginPassword }
     private val loginViewModel: LoginModelView by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -49,8 +48,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, FirebaseUserAuth
         firebaseAuth = FirebaseUserAuth(this)
 
 
-    }
 
+    }
 
     override fun onStart() {
         super.onStart()

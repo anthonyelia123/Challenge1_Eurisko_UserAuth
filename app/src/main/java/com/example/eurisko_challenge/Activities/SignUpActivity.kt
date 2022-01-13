@@ -21,12 +21,18 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.example.eurisko_challenge.FirebaseAuth.FirebaseUserAuth
-import com.example.eurisko_challenge.Objects.User
+
+import com.example.eurisko_challenge.RoomDatabase.Users
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.sql.DatabaseMetaData
 
 private const val TAG = "SignUpActivity"
+@AndroidEntryPoint
 class SignUpActivity : AppCompatActivity(), View.OnClickListener, FirebaseUserAuth.OnUserAuthenticate {
     private lateinit var firebaseAuth: FirebaseUserAuth
     private lateinit var binding : ActivitySignUpBinding
@@ -58,6 +64,13 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, FirebaseUserAu
         })
         signupModelView.getPass2().observe(this, Observer {
             pass2EditText.editText?.setText(it)
+        })
+        signupModelView.isSavedSuccessfully().observe(this, Observer {
+            if(it == true) {
+                val intent = Intent(this, WelcomeActivity2::class.java)
+                startActivity(intent)
+                finish()
+            }
         })
 
         emailFocusListener()
@@ -114,17 +127,18 @@ class SignUpActivity : AppCompatActivity(), View.OnClickListener, FirebaseUserAu
     private fun saveUserInfo(){
         val firstName = firstNameEditText.editText?.text.toString()
         val lastName = lastNameEditText.editText?.text.toString()
-        val userId = firebaseAuth.getUserId()
-        val values = ContentValues().apply {
-            put(User.Columns.ID, userId)
-            put(User.Columns.User_FirstName,firstName )
-            put(User.Columns.User_LastName, lastName)
+        val userAuthId = firebaseAuth.getUserId()
+        val email = emailEditText.editText?.text.toString()
+        var user = Users()
+        user.firstname = firstName
+        user.lastname = lastName
+        user.userAuthId = userAuthId
+        user.email = email
+
+        GlobalScope.launch(Dispatchers.IO) {
+            signupModelView.saveuserInfo(user)
         }
 
-        contentResolver.insert(User.CONTENT_URI, values)
-        val intent = Intent(this, WelcomeActivity2::class.java)
-        startActivity(intent)
-        finish()
     }
     private fun emailFocusListener(){
         binding.signupEmail.editText?.setOnFocusChangeListener { v, hasFocus ->

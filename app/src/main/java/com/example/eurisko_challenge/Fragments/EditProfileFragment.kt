@@ -23,11 +23,15 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import com.example.eurisko_challenge.FirebaseAuth.FirebaseUserAuth
 import com.example.eurisko_challenge.MVVM.EditProfileFragmentViewModel
 import com.example.eurisko_challenge.Models.UserModel
-import com.example.eurisko_challenge.Objects.User
 import com.example.eurisko_challenge.R
+import com.example.eurisko_challenge.RoomDatabase.Users
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import java.lang.RuntimeException
@@ -41,6 +45,7 @@ private const val ARG_USER = "user"
  * Use the [EditProfileFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class EditProfileFragment : Fragment() {
 
     private var userModel: UserModel? = null
@@ -55,7 +60,6 @@ class EditProfileFragment : Fragment() {
         super.onCreate(savedInstanceState)
         //get the userModel passed
         userModel = arguments?.getParcelable<UserModel>(ARG_USER)
-
         //observe firstname in MVVM
         editProfileFragmentViewModel.getFirstName().observe(this, Observer {
             firstNameEditText.editText?.setText(it)
@@ -64,13 +68,19 @@ class EditProfileFragment : Fragment() {
         editProfileFragmentViewModel.getLastName().observe(this, Observer {
             lastNameEditText.editText?.setText(it)
         })
+        editProfileFragmentViewModel.isUserUpdated().observe(this, Observer {
+            firstNameEditText.editText?.setText("")
+            lastNameEditText.editText?.setText("")
+            Toast.makeText(activity, "Names updated successfully", Toast.LENGTH_SHORT).show()
+        })
+
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_edit_profile, container, false)
-        view.findViewById<TextView>(R.id.emailTextView).text = userModel?.email
+        view.findViewById<TextView>(R.id.emailTextView).text = FirebaseAuth.getInstance().currentUser?.email.toString()
         firstNameEditText = view.findViewById<TextInputLayout>(R.id.first_name)
         lastNameEditText = view.findViewById<TextInputLayout>(R.id.last_name)
 
@@ -80,12 +90,10 @@ class EditProfileFragment : Fragment() {
             val result = editProfileFragmentViewModel.checkNamesValidation(firstNameEditText.editText?.text.toString(), lastNameEditText.editText?.text.toString())
             if(result == "200") {
                 // update name changes
-                runBlocking(Dispatchers.IO) {
-                    updateChanges()
-                }
-                Toast.makeText(activity, getString(R.string.nameUpdated), Toast.LENGTH_LONG).show()
-                firstNameEditText.editText?.setText("")
-                lastNameEditText.editText?.setText("")
+
+                updateChanges()
+
+
 
             } else if(result == "bothNameMissed") {
                 firstNameEditText.helperText = getString(R.string.enterfirstname)
@@ -106,21 +114,17 @@ class EditProfileFragment : Fragment() {
             }
 
         }
-
         return view
-
     }
-    suspend fun updateChanges(){
 
-        val values = ContentValues().apply {
-            put(User.Columns.User_FirstName, firstNameEditText.editText?.text.toString())
-            put(User.Columns.User_LastName, lastNameEditText.editText?.text.toString())
+    fun updateChanges(){
+
+        var firstName = firstNameEditText.editText?.text.toString()
+        var lastName = lastNameEditText.editText?.text.toString()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            editProfileFragmentViewModel.saveChanges(firstName, lastName)
         }
-        val selection = User.Columns.ID + " = ?"
-        val selectionArgs = arrayOf(userModel?.id)
-        editProfileFragmentViewModel.saveChanges(values, selection, selectionArgs)
-
-
     }
 
     // get image from gallery
@@ -139,6 +143,7 @@ class EditProfileFragment : Fragment() {
             val imageFilePath = it.data?.data
             val imageDecoder =
                 activity?.let { it1 -> ImageDecoder.createSource(it1.contentResolver, imageFilePath!!) }
+
             val imageToStore = imageDecoder?.let { it1 -> ImageDecoder.decodeBitmap(it1) }
             saveImageToDatabase(imageToStore!!)
         }
@@ -147,9 +152,11 @@ class EditProfileFragment : Fragment() {
     //Save image to dataBase
     @SuppressLint("Recycle")
     fun saveImageToDatabase(imageUriString: Bitmap)  {
-        //progressDialog.show()
-        //progressDialog.setContentView(R.layout.progress_dialog)
-        userModel?.id?.let { editProfileFragmentViewModel.saveImageToDatabase(imageUriString, it)}
+
+        GlobalScope.launch(Dispatchers.IO) {
+            editProfileFragmentViewModel.saveImageToDatabase(imageUriString)
+        }
+
         lifecycleScope.launchWhenCreated {
             editProfileFragmentViewModel._saveImageStatus.collect {
                 if(it == "success"){

@@ -44,9 +44,9 @@ class FirebaseUserAuth(private val listener: OnUserAuthenticate) {
         mAuth.signOut()
         listener.onLogout("200")
     }
-    fun changePass(email: String, currentPass: String, newPass: String){
+    fun changePass( currentPass: String, newPass: String){
         val user = FirebaseAuth.getInstance().currentUser
-        val credential = EmailAuthProvider.getCredential(email, currentPass)
+        val credential = EmailAuthProvider.getCredential(user?.email.toString(), currentPass)
         user?.reauthenticate(credential)?.addOnCompleteListener {
             if(it.isSuccessful){
                 Log.d("NEw", "succ")

@@ -4,14 +4,14 @@ import android.os.Parcel
 import android.os.Parcelable
 
 
-class UserModel(var firstName: String? = "", var lastName: String? = "", var id: String? = "", var email: String? = "") : Parcelable {
-    constructor(parcel: Parcel) : this(parcel.readString(), parcel.readString(), parcel.readString(), parcel.readString()) {
+class UserModel(var firstName: String? = "", var lastName: String? = "", var id: Long? = 0L, var email: String? = "") : Parcelable {
+    constructor(parcel: Parcel) : this(parcel.readString(), parcel.readString(), parcel.readLong(), parcel.readString()) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(firstName)
         parcel.writeString(lastName)
-        parcel.writeString(id)
+        parcel.writeLong(id!!)
         parcel.writeString(email)
     }
 

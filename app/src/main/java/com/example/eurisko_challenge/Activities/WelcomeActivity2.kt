@@ -22,9 +22,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.example.eurisko_challenge.FirebaseAuth.FirebaseUserAuth
 import com.example.eurisko_challenge.Fragments.AboutUsFragment
 import com.example.eurisko_challenge.Fragments.ChangePassFragment
@@ -33,21 +36,28 @@ import com.example.eurisko_challenge.Fragments.MoreFragment
 import com.example.eurisko_challenge.Models.UserModel
 import com.example.eurisko_challenge.Fragments.NewFragment
 import com.example.eurisko_challenge.MVVM.EditProfileFragmentViewModel
-import com.example.eurisko_challenge.Objects.User
-import com.example.eurisko_challenge.Objects.UsersImage
+import com.example.eurisko_challenge.MVVM.WelcomeViewModel
 import com.example.eurisko_challenge.R
 import com.example.eurisko_challenge.databinding.ActivityWelcome2Binding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 import java.io.ByteArrayOutputStream
 
 private const val TAG = "MoreActivity"
 private const val IMAGE_REQUEST_CODE = 200
+
 class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, FirebaseUserAuth.OnUserAuthenticate {
 
     private var userModel = UserModel()
     private lateinit var binding : ActivityWelcome2Binding
+    private val welcomeViewModel: WelcomeViewModel by viewModels()
     private lateinit var progressDialog : ProgressDialog
     var newFragment: Fragment? = null
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,8 +65,6 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
         binding = ActivityWelcome2Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //get user profile info from the database
-        getUserInfoFromDatabase()
 
         //init bottom navigation
         val bottomNavView = binding.bottomNavView
@@ -120,29 +128,11 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
     @SuppressLint("SetTextI18n")
     override fun getUserName(view: View) {
         val textView = view as TextView
-        getUserInfoFromDatabase()
+        //getUserInfoFromDatabase()
         textView.text = "${getString(R.string.hello)} ${userModel.firstName} ${userModel.lastName}"
 
     }
 
-    override fun getImageFromDatabase(view: View) {
-        Log.d(TAG, "getImage")
-        val selection = UsersImage.Columns.ID + " = ?"
-        val args = arrayOf(userModel.id)
-        val cursor = contentResolver.query(UsersImage.CONTENT_URI, null, selection, args, null)
-        cursor.use {
-            if (it != null) {
-                while(it.moveToNext()){
-                    with(it){
-                        val bytesImage = it.getBlob(1)
-                        val bitmapImage = BitmapFactory.decodeByteArray(bytesImage, 0, bytesImage.size)
-                        val v = view as ImageView
-                        v.setImageBitmap(bitmapImage)
-                    }
-                }
-            }
-        }
-    }
 
     //when edit profile btn is clicked in MoreFragment
     override fun onEditProfileClicked() {
@@ -182,16 +172,6 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
 
 
 
-
-
-    override fun onLogin(result: String) {
-
-    }
-
-    override fun onSignup(result: String) {
-
-    }
-
     override fun onLogout(result: String) {
         if(result == "200"){
             intent = Intent(this, MainActivity::class.java)
@@ -205,32 +185,18 @@ class WelcomeActivity2 : AppCompatActivity(), MoreFragment.OnClickCallBack, Fire
     }
 
 
-    //get user info from database
-    fun getUserInfoFromDatabase(){
-        val firebaseAuth = FirebaseUserAuth(this)
-        val userId = firebaseAuth.getUserId()
-        val selection = User.Columns.ID + " = ?"
-        val selectionArgs = arrayOf(userId)
-        val cursor = contentResolver.query(User.CONTENT_URI,
-            null,
-            selection,
-            selectionArgs,
-            null)
-        cursor.use {
-            if (it != null) {
-                while(it.moveToNext()) {
-                    // Cycle through all records
-                    with(it) {
-                        val id = getString(0)
-                        val firstName = getString(1)
-                        val lastName = getString(2)
-                        userModel.firstName = firstName
-                        userModel.lastName = lastName
-                        userModel.id = id
-                        userModel.email = firebaseAuth.getUserEmail()
-                    }
-                }
-            }
-        }
+
+    override fun getImageFromDatabase(view: View) {
+
     }
+
+
+    override fun onLogin(result: String) {
+
+    }
+
+    override fun onSignup(result: String) {
+
+    }
+
 }

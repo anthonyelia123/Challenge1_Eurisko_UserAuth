@@ -118,11 +118,11 @@ class ChangePassFragment : Fragment(), FirebaseUserAuth.OnUserAuthenticate {
             }
     }
     //change user password
-    suspend fun changePass(currentPass:String, newPass: String) {
+    fun changePass(currentPass:String, newPass: String) {
         progressDialog.show()
         progressDialog.setContentView(R.layout.progress_dialog)
         val firebaseAuth = FirebaseUserAuth(this)
-        firebaseAuth.changePass(userModel?.email!!,currentPass, newPass)
+        firebaseAuth.changePass(currentPass, newPass)
     }
 
     override fun onLogin(result: String) {
