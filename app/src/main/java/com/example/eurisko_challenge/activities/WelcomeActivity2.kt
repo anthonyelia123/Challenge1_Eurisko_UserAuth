@@ -11,7 +11,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.eurisko_challenge.R
 import com.example.eurisko_challenge.databinding.ActivityWelcome2Binding
 import com.example.eurisko_challenge.firebaseauth.FirebaseUserAuth
-import com.example.eurisko_challenge.models.UserModel
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG = "MoreActivity"
@@ -20,7 +19,6 @@ private const val IMAGE_REQUEST_CODE = 200
 @AndroidEntryPoint
 class WelcomeActivity2 : AppCompatActivity(), FirebaseUserAuth.OnUserAuthenticate {
 
-    private var userModel = UserModel()
     private lateinit var binding: ActivityWelcome2Binding
     private lateinit var progressDialog: ProgressDialog
 

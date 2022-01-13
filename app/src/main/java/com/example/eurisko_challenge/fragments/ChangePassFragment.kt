@@ -13,7 +13,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.example.eurisko_challenge.R
 import com.example.eurisko_challenge.firebaseauth.FirebaseUserAuth
-import com.example.eurisko_challenge.models.UserModel
 import com.example.eurisko_challenge.viewmodels.ChangePassFragmentViewModel
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
@@ -29,7 +28,7 @@ private const val ARG_USER = "user"
  */
 class ChangePassFragment : Fragment(), FirebaseUserAuth.OnUserAuthenticate {
     // TODO: Rename and change types of parameters
-    private var userModel: UserModel? = null
+
     private val changePassFragmentViewModel: ChangePassFragmentViewModel by viewModels()
     private lateinit var currentPassEditText: TextInputLayout
     private lateinit var newPassEditText: TextInputLayout
@@ -38,7 +37,7 @@ class ChangePassFragment : Fragment(), FirebaseUserAuth.OnUserAuthenticate {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        userModel = arguments?.getParcelable(ARG_USER)
+
         changePassFragmentViewModel.getCurrentPass().observe(this, Observer {
             currentPassEditText.editText?.setText(it)
         })
@@ -86,23 +85,6 @@ class ChangePassFragment : Fragment(), FirebaseUserAuth.OnUserAuthenticate {
 
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param mUser Parameter 1.
-         * @return A new instance of fragment ChangePassFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(mUser: UserModel) =
-            ChangePassFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARG_USER, mUser)
-                }
-            }
-    }
     //change user password
     fun changePass(currentPass:String, newPass: String) {
         progressDialog.show()

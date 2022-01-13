@@ -23,7 +23,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.example.eurisko_challenge.R
-import com.example.eurisko_challenge.models.UserModel
 import com.example.eurisko_challenge.viewmodels.EditProfileFragmentViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
@@ -45,7 +44,6 @@ private const val ARG_USER = "user"
 @AndroidEntryPoint
 class EditProfileFragment : Fragment() {
 
-    private var userModel: UserModel? = null
     private val editProfileFragmentViewModel: EditProfileFragmentViewModel by viewModels()
 
     private lateinit var firstNameEditText: TextInputLayout
@@ -53,8 +51,7 @@ class EditProfileFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //get the userModel passed
-        userModel = arguments?.getParcelable<UserModel>(ARG_USER)
+
         //observe firstname in MVVM
         editProfileFragmentViewModel.getFirstName().observe(this, Observer {
             firstNameEditText.editText?.setText(it)
@@ -182,21 +179,4 @@ class EditProfileFragment : Fragment() {
     }
 
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param mUser Parameter 1.
-         * @return A new instance of fragment EditProfileFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(mUser: UserModel) =
-            EditProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARG_USER, mUser)
-                }
-            }
-    }
 }
